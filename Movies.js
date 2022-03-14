@@ -15,7 +15,7 @@ mongoose.set('useCreateIndex', true);
 
 var MovieSchema = new Schema({
     title:{type:String,required:true,index:{unique:true}},
-    yearReleased:{type:Date, required:true},
+    releaseYear:{type:Date, required:true},
     genre:{type:String,required:true,enum:['Action', 'Adventure', 'Comedy', 'Drama', 'Fantasy', 'Horror', 'Mystery', 'Thriller', 'Western'] },
     actors: { type: [{actorName: String, characterName: String}], required: true }
 });
