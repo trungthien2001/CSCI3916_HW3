@@ -131,13 +131,21 @@ router.route('/movies')
         }
 
     })
-    .put(authJwtController.isAuthenticated, function (req,res){
-        //DB query based off title only.
-        Movies.findOneAndUpdate({title: req.body.title}, {releaseYear: req.body.releaseYear}).exec(function (err, movie) {
-            if (err)
-                res.send(err)
-            else
-                res.json( {status: 200, message: "movie updated with the correct release year", new_releaseYear: req.body.releaseYear})
+    .put(authJwtController.isAuthenticated, function(req, res) {
+        Movies.findOne({title: req.body.title}, function(err, found) {
+            if (err) {
+                res.json({message: "Read error \n", error: err});
+            }
+            else {
+                Movies.updateOne({title: req.body.title}, req.body.modify)
+                    .then(mov => {
+                        if (!mov) {
+                            return res.status(404).end();
+                        }
+                        return res.status(200).json({message: "Movie is updated"})
+                    })
+                    .catch(err => console.log(err))
+            }
         });
     })
     .delete(authJwtController.isAuthenticated, function(req, res) {
