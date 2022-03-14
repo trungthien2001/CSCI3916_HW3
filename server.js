@@ -105,13 +105,13 @@ router.route('/movies')
     })
     .post(authJwtController.isAuthenticated, function (req,res){
         switch (req) {
-            case !req.body.title:
+            case req.body.title:
                 return res.json({success: false, message: 'Please include the title of the movie.'});
-            case !req.body.releaseYear:
+            case req.body.releaseYear:
                 return res.json({success: false, message: 'Please include the release year of the movie.'});
-            case !req.body.genre:
+            case req.body.genre:
                 return res.json({success: false, message: 'Please include the genre of the movie.'});
-            case movie.actors.length < 3:
+            case req.body.actors.length < 3:
                 return res.json({success: false, message: 'Please include at least 3 actors of the movie.'});
             default:
                 var movieNew = new Movies();
