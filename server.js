@@ -103,33 +103,23 @@ router.route('/movies')
             res.json(resMovie);
         })
     })
-    .post(authJwtController.isAuthenticated, function (req,res){
-        switch (req) {
-            case !req.body.title:
-                return res.json({success: false, message: 'Please include the title of the movie.'});
-            case !req.body.releaseYear:
-                return res.json({success: false, message: 'Please include the release year of the movie.'});
-            case !req.body.genre:
-                return res.json({success: false, message: 'Please include the genre of the movie.'});
-            case req.body.actors.length < 3:
-                return res.json({success: false, message: 'Please include at least 3 actors of the movie.'});
-            default:
-                var movieNew = new Movies();
-                movieNew.title = req.body.title;
-                movieNew.releaseYear = req.body.releaseYear;
-                movieNew.genre = req.body.genre;
-                movieNew.actors = req.body.actors;
-                movieNew.save(function (err){
-                    if (err) {
-                        if (err.code == 11000)
-                            return res.json({success: false, message: 'A user with that username already exists.'});
-                        else
-                            return res.json(err);
-                    }
-                    res.send({status: 200, message: "movie saved", headers: req.headers, query: req.query, env: process.env.UNIQUE_KEY});
-                });
-        }
+    .post(authJwtController.isAuthenticated, function(req, res){
+            var movie = new Movies();
+            movie.title = req.body.title;
+            movie.year = req.body.year;
+            movie.genre = req.body.genre;
+            movie.actors = req.body.actors;
+    
+            if(movie.actors.length < 3){
+                return res.status(400).json({message: "Movie must have at least 3 actors."})
+            }
 
+            movie.save(function(err){
+                if (err) {
+                    return res.status(400).json(err);
+                }
+                res.json({success: true, message: req.body.title + ' was successfully saved.'})
+            });
     })
     .put(authJwtController.isAuthenticated, function (req,res){
         //DB query based off title only.
