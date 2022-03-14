@@ -111,7 +111,7 @@ router.route('/movies')
                 return res.json({success: false, message: 'Please include the release year of the movie.'});
             case !req.body.genre:
                 return res.json({success: false, message: 'Please include the genre of the movie.'});
-            case req.body.actors.length < 3:
+            case movie.actors.length < 3:
                 return res.json({success: false, message: 'Please include at least 3 actors of the movie.'});
             default:
                 var movieNew = new Movies();
