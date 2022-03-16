@@ -146,6 +146,83 @@ router.route('/movies')
         });
     });
 
+router.route('/movies/:title')
+    .get(authJwtController.isAuthenticated, function (req, res)
+    {
+        console.log(req.body);
+        res = res.status(200);
+
+        if (req.get('Content-Type'))
+        {
+            res = res.type(req.get('Content-Type'));
+        }
+        Movie.find({title: req.params.title}).exec(function (err, movie)
+        {
+            if (err)
+            {
+                res.send(err);
+            }
+            res.json(movie);
+        })
+    })
+    .delete(authJwtController.isAuthenticated, function (req, res)
+    {
+        console.log(req.body);
+        res = res.status(200);
+        if (req.get('Content-Type'))
+        {
+            res = res.type(req.get('Content-Type'));
+        }
+        Movie.find({title: req.params.title}).exec(function (err, movie) {
+            if (err)
+            {
+                res.send(err);
+            }
+            console.log(movie);
+            if (movie.length < 1)
+            {
+                res.json({success: false, message: 'The Movie Title you entered could not be found.'});
+            } else
+            {
+                Movie.deleteOne({title: req.params.title}).exec(function (err)
+                {
+                    if (err)
+                    {
+                        res.send(err);
+                    } else
+                    {
+                        var o = getJSONObjectForMovieRequirement(req, 'Movie has been deleted');
+                        res.json(o);
+                    }
+                })
+            }
+        })
+    })
+    .put(authJwtController.isAuthenticated, function (req, res)
+    {
+        console.log(req.body);
+        res = res.status(200);
+        if (req.get('Content-Type'))
+        {
+            res = res.type(req.get('Content-Type'));
+        }
+        Movie.updateOne({title: req.params.title},
+            {
+            title: req.body.title,
+            yearReleased: req.body.yearReleased, genre: req.body.genre, actors: req.body.actors
+        })
+            .exec(function (err)
+            {
+                if (err)
+                {
+                    res.send(err);
+                }
+            })
+        var o = getJSONObjectForMovieRequirement(req, 'Movie has been updated');
+        res.json(o);
+    });
+
+
 
 app.use('/', router);
 app.listen(process.env.PORT || 8080);
